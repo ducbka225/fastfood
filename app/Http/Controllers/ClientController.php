@@ -20,6 +20,7 @@ use DB;
 use Carbon\Carbon;
 use App\NL_CheckOutV3;
 use Illuminate\Support\Facades\Hash;
+use Mail;
 
 class ClientController extends Controller
 {
@@ -302,6 +303,11 @@ class ClientController extends Controller
 			if($req->option_payment != 2){
 				return redirect((string)$nl_result->checkout_url);
 			}
+			Mail::send('mail.temp_mail', array('name'=>$customer->name,'email'=>$customer->email), function($message){
+				$message->to(request()->input('email'), request()->input('name'))
+				->subject('Đặt Hàng Thành Công!');
+				$message->from('fastfoodbka@gmail.com','FastFood');
+			});
 			return view('client.checkout.complete');
 		}
 		catch (Exception $e) {
